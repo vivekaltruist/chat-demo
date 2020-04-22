@@ -10,6 +10,8 @@
     <script>
         var userName= 'anon';
         $(function () {
+
+            //sockets
             var socket = io();
             $('form').submit(function(e) {
                 e.preventDefault(); // prevents page reloading
@@ -28,7 +30,22 @@
                 $('#messages').append($('<li>').html(`<b>${msg.sender}</b>: ${msg.message}`));
             });
             socket.on('join_message', function(name){
-                $('#messages').append($('<li>').text(`${name} has joined the chat!`));
+                $('#messages').append($('<li>').html(`<b>${name}</b> has joined the chat!`));
+            });
+            socket.on('left_message', function(name){
+                $('#messages').append($('<li>').html(`<b>${name}</b> has left the chat!`));
+            });
+            socket.on('typing_start_message', function(name){
+                if(userName != name)
+                {
+                    $('#typing').html(`<b>${name}</b> is typing..`);
+                }
+            });
+            socket.on('typing_stop_message', function(name){
+                $('#typing').html('');
+            });
+            window.addEventListener('unload', function(event) {
+                socket.emit('user_left',userName);
             });
             function nameSubmitted() {
                         var name = $('#name').val();
@@ -38,6 +55,9 @@
                             $( "#dialog-4" ).dialog("close");
                         }
                     }
+
+            
+            //UI
             $( "#dialog-4" ).dialog({
                autoOpen: false, 
                modal: true,
@@ -49,6 +69,31 @@
             $("#name").on('keyup', function (e) {
                 if (e.keyCode === 13) {
                     nameSubmitted();
+                }
+            });
+
+            //Typing
+            var typing = false;
+            var timeout = undefined;
+
+            function timeoutFunction(){
+                typing = false;
+                socket.emit("user_not_typing", userName);
+            }
+
+            function onKeyDownNotEnter(){
+                if(typing == false) {
+                    typing = true
+                    socket.emit("user_typing", userName);
+                    timeout = setTimeout(timeoutFunction, 2500);
+                } else {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(timeoutFunction, 2500);
+                }
+            }
+            $("#m").on('keyup', function (e) {
+                if (e.keyCode !== 13) {
+                    onKeyDownNotEnter();
                 }
             });
             
@@ -84,5 +129,6 @@
     <form action="">
       <input id="m" autocomplete="off" /><button>Send</button>
     </form>
+    <div id="typing"></div>
   </body>
 </html>

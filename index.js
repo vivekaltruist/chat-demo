@@ -13,6 +13,15 @@ io.on('connection', (socket) => {
     socket.on('user_joined', (username) => {
         io.emit('join_message', username);
     });
+    socket.on('user_left', (username) => {
+        io.emit('left_message', username);
+    });
+    socket.on('user_typing', (username) => {
+        io.emit('typing_start_message', username);
+    });
+    socket.on('user_not_typing', (username) => {
+        io.emit('typing_stop_message', username);
+    });
 });
 
 http.listen(process.env.PORT || 5000, () => {
