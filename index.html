@@ -8,19 +8,24 @@
          rel = "stylesheet">
     <script src = "https://code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
     <script>
+        var userName= 'anon';
         $(function () {
             var socket = io();
             $('form').submit(function(e) {
                 e.preventDefault(); // prevents page reloading
                 var msg = $('#m').val();
                 if(msg !== ''){
-                    socket.emit('send_message', msg);
+                    socket.emit('send_message', 
+                        {
+                            sender: userName, 
+                            message: msg
+                        });
                 }
                 $('#m').val('');
                 return false;
             });
             socket.on('chat_message', function(msg){
-                $('#messages').append($('<li>').text(msg));
+                $('#messages').append($('<li>').html(`<b>${msg.sender}</b>: ${msg.message}`));
             });
             socket.on('join_message', function(name){
                 $('#messages').append($('<li>').text(`${name} has joined the chat!`));
@@ -28,6 +33,7 @@
             function nameSubmitted() {
                         var name = $('#name').val();
                         if(name != ''){
+                            userName = name;
                             socket.emit('user_joined', name);
                             $( "#dialog-4" ).dialog("close");
                         }
