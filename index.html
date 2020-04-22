@@ -4,6 +4,9 @@
     <title>Chatter</title>
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <link href = "https://code.jquery.com/ui/1.12.0/themes/ui-lightness/jquery-ui.css"
+         rel = "stylesheet">
+    <script src = "https://code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
     <script>
         $(function () {
             var socket = io();
@@ -19,21 +22,57 @@
             socket.on('chat_message', function(msg){
                 $('#messages').append($('<li>').text(msg));
             });
+            socket.on('join_message', function(name){
+                $('#messages').append($('<li>').text(`${name} has joined the chat!`));
+            });
+            function nameSubmitted() {
+                        var name = $('#name').val();
+                        if(name != ''){
+                            socket.emit('user_joined', name);
+                            $( "#dialog-4" ).dialog("close");
+                        }
+                    }
+            $( "#dialog-4" ).dialog({
+               autoOpen: false, 
+               modal: true,
+               buttons: {
+                  OK: nameSubmitted
+               },
+            });
+            $( "#dialog-4" ).dialog( "open" );
+            $("#name").on('keyup', function (e) {
+                if (e.keyCode === 13) {
+                    nameSubmitted();
+                }
+            });
+            
         });
     </script>
     <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-      h2 {padding-bottom: 20px;}
-      body { font: 13px Helvetica, Arial; }
-      form { background: #000; padding: 3px; position: fixed; bottom: 10px; width: 100%; }
-      form input { border: 0; padding: 10px; width: 90%; margin-right: 0.5%; }
-      form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
-      #messages { list-style-type: none; margin: 0; padding: 0; }
-      #messages li { padding: 5px 10px; }
-      #messages li:nth-child(odd) { background: #eee; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        h2 {padding-bottom: 20px;}
+        body { font: 13px Helvetica, Arial; }
+        form { background: #000; padding: 3px; position: fixed; bottom: 10px; width: 100%; }
+        form input { border: 0; padding: 10px; width: 90%; margin-right: 0.5%; }
+        form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
+        #messages { list-style-type: none; margin: 0; padding: 0; }
+        #messages li { padding: 5px 10px; }
+        #messages li:nth-child(odd) { background: #eee; }
+        .ui-widget-header,.ui-state-default {
+            background:#6dcdb7;
+            border: 1px solid #6d80cd;
+            color: #FFFFFF;
+            font-weight: bold;
+        }
+        #name{ margin-top: 10px;}
     </style>
   </head>
   <body>
+    <div id = "dialog-4" title = "Enter Name">
+        <p>Please enter your name:</p>
+        <input id="name" autocomplete="off" />
+    </div>
+      
     <h2>Chatter</h2>
     <ul id="messages"></ul>
     <form action="">
