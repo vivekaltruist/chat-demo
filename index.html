@@ -11,7 +11,7 @@
         var userName= 'anon';
         $(function () {
 
-            //sockets
+            //socket emmiter
             var socket = io();
             $('form').submit(function(e) {
                 e.preventDefault(); // prevents page reloading
@@ -20,14 +20,27 @@
                     socket.emit('send_message', 
                         {
                             sender: userName, 
-                            message: msg
+                            message: msg,
+                            id: socket.id
                         });
                 }
                 $('#m').val('');
                 return false;
             });
+
+            function nameSubmitted() {
+                var name = $('#name').val();
+                if(name != ''){
+                    userName = name;
+                    socket.emit('user_joined', name);
+                    $( "#dialog-4" ).dialog("close");
+                    $( "#m" ).focus();
+                }
+            }
+            
+            //socket listeners
             socket.on('chat_message', function(msg){
-                $('#messages').append($('<li>').html(`<b>${msg.sender}</b>: ${msg.message}`));
+                $('#messages').append($('<li>').html(`<b>${msg.sender}</b> <img class='online' id=${msg.id} src='/assets/online.png'>: ${msg.message}`));
             });
             socket.on('join_message', function(name){
                 $('#messages').append($('<li>').html(`<b>${name}</b> has joined the chat!`));
@@ -44,17 +57,29 @@
             socket.on('typing_stop_message', function(name){
                 $('#typing').html('');
             });
+            socket.on('online_status', function(status){
+                if(status.online){
+                    $(`#${status.id}`).attr('src', '/assets/online.png');
+                }
+                else
+                {
+                    $(`#${status.id}`).attr('src', '/assets/offline.png');
+                }
+            });
+            
+            //window events
             window.addEventListener('unload', function(event) {
                 socket.emit('user_left',userName);
             });
-            function nameSubmitted() {
-                        var name = $('#name').val();
-                        if(name != ''){
-                            userName = name;
-                            socket.emit('user_joined', name);
-                            $( "#dialog-4" ).dialog("close");
-                        }
-                    }
+            window.addEventListener('online', () => socket.emit('online_status', {
+                online: true,
+                id: socket.id
+            }));
+            window.addEventListener('offline', () => socket.emit('online_status', {
+                online: false,
+                id: socket.id
+            }));
+            
 
             
             //UI
@@ -116,6 +141,7 @@
             font-weight: bold;
         }
         #name{ margin-top: 10px;}
+        .online {width: 13px; height: 10px;}
     </style>
   </head>
   <body>
