@@ -28,6 +28,16 @@ io.on('connection', (socket) => {
     socket.on('online_status', (status) => {
         io.emit('online_status', status);
     });
+    socket.on('disconnect', (data) => {
+        io.emit('online_status', {
+            online:false,
+            id: socket.id
+        });
+    });
+    io.emit('online_status', {
+        online:true,
+        id: socket.id
+    });
 });
 
 http.listen(process.env.PORT || 5000, () => {

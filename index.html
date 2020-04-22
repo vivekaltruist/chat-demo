@@ -35,6 +35,7 @@
                     socket.emit('user_joined', name);
                     $( "#dialog-4" ).dialog("close");
                     $( "#m" ).focus();
+                    console.log("user joined: "+socket.id);
                 }
             }
             
@@ -71,14 +72,12 @@
             window.addEventListener('unload', function(event) {
                 socket.emit('user_left',userName);
             });
-            window.addEventListener('online', () => socket.emit('online_status', {
-                online: true,
-                id: socket.id
-            }));
-            window.addEventListener('offline', () => socket.emit('online_status', {
-                online: false,
-                id: socket.id
-            }));
+            window.addEventListener('online', () => {
+                $(`#${socket.id}`).attr('src', '/assets/online.png');
+            });
+            window.addEventListener('offline', () => {
+                $(`#${socket.id}`).attr('src', '/assets/offline.png');
+            });
             
 
             
