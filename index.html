@@ -41,7 +41,7 @@
             
             //socket listeners
             socket.on('chat_message', function(msg){
-                $('#messages').append($('<li>').html(`<b>${msg.sender}</b> <img class='online' id=${msg.id} src='/assets/online.png'>: ${msg.message}`));
+                $('#messages').append($('<li>').html(`<b>${msg.sender}</b> <img class='online ${msg.id}' src='/assets/online.png'>: ${msg.message}`));
             });
             socket.on('join_message', function(name){
                 $('#messages').append($('<li>').html(`<b>${name}</b> has joined the chat!`));
@@ -60,11 +60,11 @@
             });
             socket.on('online_status', function(status){
                 if(status.online){
-                    $(`#${status.id}`).attr('src', '/assets/online.png');
+                    $(`.${status.id}`).attr('src', '/assets/online.png');
                 }
                 else
                 {
-                    $(`#${status.id}`).attr('src', '/assets/offline.png');
+                    $(`.${status.id}`).attr('src', '/assets/offline.png');
                 }
             });
             
@@ -73,10 +73,10 @@
                 socket.emit('user_left',userName);
             });
             window.addEventListener('online', () => {
-                $(`#${socket.id}`).attr('src', '/assets/online.png');
+                $(`.${socket.id}`).attr('src', '/assets/online.png');
             });
             window.addEventListener('offline', () => {
-                $(`#${socket.id}`).attr('src', '/assets/offline.png');
+                $(`.${socket.id}`).attr('src', '/assets/offline.png');
             });
             
 
