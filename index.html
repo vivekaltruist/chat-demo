@@ -9,7 +9,10 @@
             var socket = io();
             $('form').submit(function(e) {
                 e.preventDefault(); // prevents page reloading
-                socket.emit('send_message', $('#m').val());
+                var msg = $('#m').val();
+                if(msg !== ''){
+                    socket.emit('send_message', msg);
+                }
                 $('#m').val('');
                 return false;
             });
