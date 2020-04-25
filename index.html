@@ -7,15 +7,26 @@
     <link href = "https://code.jquery.com/ui/1.12.0/themes/ui-lightness/jquery-ui.css"
          rel = "stylesheet">
     <script src = "https://code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
+    <link rel="stylesheet" href="/emojionearea.min.css">
+    <script type="text/javascript" src="/emojionearea.min.js"></script>
+
+    </head>
     <script>
         var userName= 'anon';
         $(function () {
 
             //socket emmiter
             var socket = io();
-            $('form').submit(function(e) {
-                e.preventDefault(); // prevents page reloading
-                var msg = $('#m').val();
+            var input = $("#m").emojioneArea();
+            var inputbox = input[0].emojioneArea;
+            inputbox.on('keyup', function (b,e) {
+                if (e.keyCode === 13) {
+                    messageSubmitted();
+                }
+            });
+
+            function messageSubmitted() {
+                var msg = inputbox.getText();
                 if(msg !== ''){
                     socket.emit('send_message', 
                         {
@@ -24,10 +35,8 @@
                             id: socket.id
                         });
                 }
-                $('#m').val('');
-                return false;
-            });
-
+                inputbox.setText('');
+            }
             function nameSubmitted() {
                 var name = $('#name').val();
                 if(name != ''){
@@ -95,7 +104,9 @@
                     nameSubmitted();
                 }
             });
-
+            $("#send_button").click(function (e) {
+                messageSubmitted();
+            });
             //Typing
             var typing = false;
             var timeout = undefined;
@@ -115,7 +126,7 @@
                     timeout = setTimeout(timeoutFunction, 2500);
                 }
             }
-            $("#m").on('keyup', function (e) {
+            inputbox.on('keyup', function (b,e) {
                 if (e.keyCode !== 13) {
                     onKeyDownNotEnter();
                 }
@@ -128,15 +139,17 @@
 
             Image2 = new Image()
             Image2.src = "/assets/offline.png"
+
+            
         });
     </script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         h2 {padding-bottom: 20px;}
         body { font: 13px Helvetica, Arial; }
-        form { background: #000; padding: 3px; position: fixed; bottom: 10px; width: 100%; }
-        form input { border: 0; padding: 10px; width: 90%; margin-right: 0.5%; }
-        form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
+        #input { background: #000; padding: 3px; position: fixed; bottom: 10px; width: 100%; }
+        #m { border: 0; padding: 10px; width: 90%; margin-right: 0.5%; }
+        #send_button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
         #messages { list-style-type: none; margin: 0; padding: 0; }
         #messages li { padding: 5px 10px; }
         #messages li:nth-child(odd) { background: #eee; }
@@ -148,6 +161,8 @@
         }
         #name{ margin-top: 10px;}
         .online {width: 13px; height: 10px;}
+        #input {display: flex; flex-direction: row;}
+        
     </style>
   </head>
   <body>
@@ -158,9 +173,10 @@
       
     <h2>Chatter</h2>
     <ul id="messages"></ul>
-    <form action="">
-      <input id="m" autocomplete="off" /><button>Send</button>
-    </form>
     <div id="typing"></div>
+    <div id="input">  
+          <input id="m" autocomplete="off" />
+          <button id="send_button">Send</button>
+    </div>
   </body>
 </html>
