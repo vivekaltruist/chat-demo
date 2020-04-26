@@ -2,7 +2,7 @@ var express = require('express');
 var app = express();
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
-
+var userMap =  {};
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html');
 });
@@ -14,6 +14,8 @@ io.on('connection', (socket) => {
         io.emit('chat_message', msg);
     });
     socket.on('user_joined', (username) => {
+        userMap[socket.id] = username;
+        io.emit('No_of_people_online_status', userMap );
         io.emit('join_message', username);
     });
     socket.on('user_left', (username) => {
@@ -29,15 +31,18 @@ io.on('connection', (socket) => {
         io.emit('online_status', status);
     });
     socket.on('disconnect', (data) => {
+        delete userMap[socket.id];
         io.emit('online_status', {
             online:false,
             id: socket.id
         });
+        io.emit('No_of_people_online_status', userMap);
     });
     io.emit('online_status', {
         online:true,
         id: socket.id
     });
+
 });
 
 http.listen(process.env.PORT || 5000, () => {
