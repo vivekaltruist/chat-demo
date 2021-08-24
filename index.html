@@ -99,11 +99,11 @@
             
             //UI
             $( "#dialog-4" ).dialog({
-               autoOpen: false, 
-               modal: true,
-               buttons: {
-                  OK: nameSubmitted
-               },
+                autoOpen: false, 
+                modal: true,
+                buttons: {
+                   OK: nameSubmitted
+                },
             });
             $( "#dialog-4" ).dialog( "open" );
             $("#name").on('keyup', function (e) {
@@ -164,7 +164,7 @@
         #messages li:nth-child(odd) { background: #eee; }
         .ui-widget-header,.ui-state-default {
             background:#6dcdb7;
-            border: 1px solid #6d80cd;
+            border: 1px solid black;
             color: #FFFFFF;
             font-weight: bold;
         }
@@ -182,16 +182,20 @@
             height: 80vh;
         }
         .message-container{
-            width: 60%;
+            width: 70%;
             height: 80vh;
             overflow-y: scroll;
         }
         .people-container{
             border:2px solid;
-            width: 40%;
+            width: 30%;
             padding-left: 30px;
             background-color: #e8fffb;
             overflow-y: scroll;
+        }
+
+        .ui-dialog-titlebar-close {
+            visibility: hidden;
         }
     </style>
   </head>
