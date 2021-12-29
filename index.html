@@ -156,11 +156,11 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         h2 {padding-bottom: 20px;}
         body { font: 13px Helvetica, Arial; }
-        #input { background: #000; padding: 3px; position: fixed; bottom: 10px; width: 60%; }
+        #input {display: flex; flex-direction: row; background: #000; padding: 3px; position: fixed; bottom: 10px; width: 60%; }
         #m { border: 0; padding: 10px; width: 50%; margin-right: 0.5%; }
-        #send_button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
+        #send_button { width: 20%; background: rgb(130, 224, 255); border: none; padding: 10px; }
         #messages { list-style-type: none; margin: 0; padding: 0; }
-        #messages li { padding: 5px 10px; }
+        #messages li { padding: 5px 10px; word-wrap: break-word; white-space: initial; }
         #messages li:nth-child(odd) { background: #eee; }
         .ui-widget-header,.ui-state-default {
             background:#6dcdb7;
@@ -170,7 +170,19 @@
         }
         #name{ margin-top: 10px;}
         .online {width: 13px; height: 10px;}
-        #input {display: flex; flex-direction: row;}
+        @media only screen and (max-width: 600px) {
+            #input {
+                width: 100%;
+            }
+            .people-container {
+                width: 20%;
+                height: 50vh;
+            }
+            .message-container {
+                width: 80%;
+            }
+        }
+        
         .users_online {
             margin-bottom: 20px;
             font-weight: bold;
@@ -192,6 +204,10 @@
             padding-left: 30px;
             background-color: #e8fffb;
             overflow-y: scroll;
+            overflow-x: hidden;
+            display: inline-block;
+            white-space: initial;
+            word-wrap: break-word;
         }
 
         .ui-dialog-titlebar-close {
